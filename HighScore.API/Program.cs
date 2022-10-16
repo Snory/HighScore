@@ -17,16 +17,16 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 
 app.UseAuthorization();
 
+app.UseEndpoints(
+        (endpoints) => endpoints.MapControllers()    
+    );
+
 app.MapControllers();
 
-app.UseRouting();
-
-app.UseEndpoints(
-        (cosi) => cosi.MapControllers()    
-    );
 
 //app.Run(async (context) =>
 //{
