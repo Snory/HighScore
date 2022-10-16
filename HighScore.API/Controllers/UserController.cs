@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using HighScore.API.Models;
+using HighScore.API.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -9,17 +11,13 @@ namespace HighScore.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private IRepository<UserDTO> _userRepository = UserInMemoryRepository.Instance;
+        
         //default routing attribute based on router attribute defined for class
         [HttpGet]
         public JsonResult GetUsers()
         {
-            return new JsonResult(
-                new List<Object>
-                {
-                    new { id = 1, Name = "Bruce Willis"},
-                    new { id = 2, Name = "Jackie Chan"}
-                }
-            );
+            return new JsonResult(_userRepository.GetAll());
         }
     }
 }
