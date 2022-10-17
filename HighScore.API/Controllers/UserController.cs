@@ -15,9 +15,30 @@ namespace HighScore.API.Controllers
         
         //default routing attribute based on router attribute defined for class
         [HttpGet]
-        public JsonResult GetUsers()
+        public ActionResult<IEnumerable<UserDTO>> GetUsers()
         {
-            return new JsonResult(_userRepository.GetAll());
+            var usersQuery = _userRepository.GetAll();
+
+            if (usersQuery == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(usersQuery);
+
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<UserDTO> GetUser(int id)
+        {
+            var userQuery = _userRepository.Find((user) => user.Id == id).First();
+            
+            if(userQuery == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(userQuery);
         }
     }
 }
