@@ -1,4 +1,5 @@
 ﻿using HighScore.API.Models;
+using System.Linq.Expressions;
 
 namespace HighScore.API.Repositories
 {
@@ -22,6 +23,12 @@ namespace HighScore.API.Repositories
             return _users;
         }
 
-
+        public IEnumerable<UserDTO> Find(Expression<Func<UserDTO, bool>> predicate)
+        {
+            return _users
+                   .AsQueryable()
+                   .Where(predicate)
+                   .ToList();
+        }
     }
 }
