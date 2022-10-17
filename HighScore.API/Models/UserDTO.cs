@@ -1,4 +1,6 @@
-﻿namespace HighScore.API.Models
+﻿using System.Collections;
+
+namespace HighScore.API.Models
 {
     public class UserDTO
     {
