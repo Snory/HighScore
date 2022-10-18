@@ -9,7 +9,8 @@ namespace HighScore.API.Controllers
     [ApiController]
     public class HighScoreController : ControllerBase
     {
-        private HighScoreInMemoryRepository _highScoreRepository = HighScoreInMemoryRepository.Instance;
+        private IRepository<HighScoreDTO> _highScoreRepository = HighScoreInMemoryRepository.Instance;
+        private IRepository<UserDTO> _userRepository = UserInMemoryRepository.Instance;
 
         [HttpGet]
         public ActionResult<IEnumerable<HighScoreDTO>> GetUserHighScores(int userId)
@@ -24,5 +25,23 @@ namespace HighScore.API.Controllers
             return Ok(highScoreQuery);
         }
 
+        [HttpPost]
+        public ActionResult<HighScoreDTO> PostUserHighScore(int userId, HighScorePostDTO highScore)
+        {
+            if(_userRepository.Find((user) => user.Id == userId) == null)
+            {
+                return NotFound();
+            }
+
+
+            HighScoreDTO newHighScore = new HighScoreDTO() { Id = 1, Score = highScore.Score, UserId = userId };
+
+            _highScoreRepository.Add(newHighScore);
+            
+
+            return NoContent();
+        }
     }
+
+   
 }

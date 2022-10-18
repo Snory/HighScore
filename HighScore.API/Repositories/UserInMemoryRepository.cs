@@ -30,5 +30,10 @@ namespace HighScore.API.Repositories
                    .Where(predicate)
                    .ToList();
         }
+
+        public void Add(UserDTO item)
+        {
+            _users.Add(item);
+        }
     }
 }

@@ -5,13 +5,13 @@ namespace HighScore.API.Repositories
 {
     public class HighScoreInMemoryRepository : IRepository<HighScoreDTO>
     {
-        private List<HighScoreDTO> highScoreDTOs { get; set; }
+        private List<HighScoreDTO> _highScores { get; set; }
 
         public static HighScoreInMemoryRepository Instance { get; } = new HighScoreInMemoryRepository();
 
         public HighScoreInMemoryRepository()
         {
-            highScoreDTOs = new List<HighScoreDTO>()
+            _highScores = new List<HighScoreDTO>()
             {
                 new HighScoreDTO() { Id = 1, UserId = 1 , Score = 10 }
             };
@@ -19,7 +19,7 @@ namespace HighScore.API.Repositories
 
         public IEnumerable<HighScoreDTO> Find(Expression<Func<HighScoreDTO, bool>> predicate)
         {
-            return highScoreDTOs
+            return _highScores
                    .AsQueryable()
                    .Where(predicate)
                    .ToList();
@@ -27,7 +27,12 @@ namespace HighScore.API.Repositories
 
         public IEnumerable<HighScoreDTO> GetAll()
         {
-            return highScoreDTOs;
+            return _highScores;
+        }
+
+        public void Add(HighScoreDTO item)
+        {
+            _highScores.Add(item);
         }
     }
 }
