@@ -43,6 +43,8 @@ namespace HighScore.API.Controllers
             //https://ochzhen.com/blog/created-createdataction-createdatroute-methods-explained-aspnet-core
             return CreatedAtRoute("GetUserHighScores", routeValues, createdResource);
         }
+
+
     }
 
    
