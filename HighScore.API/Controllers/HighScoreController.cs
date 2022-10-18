@@ -12,7 +12,7 @@ namespace HighScore.API.Controllers
         private IRepository<HighScoreDTO> _highScoreRepository = HighScoreInMemoryRepository.Instance;
         private IRepository<UserDTO> _userRepository = UserInMemoryRepository.Instance;
 
-        [HttpGet]
+        [HttpGet(Name = "GetUserHighScores")]
         public ActionResult<IEnumerable<HighScoreDTO>> GetUserHighScores(int userId)
         {
             var highScoreQuery = _highScoreRepository.Find((highscore) => highscore.UserId == userId).ToList();
@@ -34,12 +34,14 @@ namespace HighScore.API.Controllers
             }
 
 
-            HighScoreDTO newHighScore = new HighScoreDTO() { Id = 1, Score = highScore.Score, UserId = userId };
+            HighScoreDTO createdResource = new HighScoreDTO() { Id = 1, Score = highScore.Score, UserId = userId };
 
-            _highScoreRepository.Add(newHighScore);
-            
+            _highScoreRepository.Add(createdResource);
 
-            return NoContent();
+            var routeValues = new { userId = userId };
+
+            //https://ochzhen.com/blog/created-createdataction-createdatroute-methods-explained-aspnet-core
+            return CreatedAtRoute("GetUserHighScores", routeValues, createdResource);
         }
     }
 
