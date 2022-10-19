@@ -1,6 +1,5 @@
 ﻿using HighScore.API.Models;
 using HighScore.API.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 

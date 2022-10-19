@@ -5,7 +5,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers((options) =>
 {
     options.ReturnHttpNotAcceptable = true;
-});
+})
+.AddNewtonsoftJson() // replace defaul json input and output formatters (used for patch methods)
+;
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
