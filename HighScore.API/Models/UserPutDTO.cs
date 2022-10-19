@@ -2,9 +2,10 @@
 
 namespace HighScore.API.Models
 {
-    public class HighScorePostDTO
+    public class UserPutDTO
     {
         [Required]
-        public float Score { get; set; }
+        [MaxLength(100)]
+        public string Name { get; set; } = string.Empty;
     }
 }

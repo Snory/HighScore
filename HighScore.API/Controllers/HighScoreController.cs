@@ -26,7 +26,7 @@ namespace HighScore.API.Controllers
         }
 
         [HttpPost]
-        public ActionResult<HighScoreDTO> PostUserHighScore(int userId, HighScorePostDTO highScore)
+        public ActionResult<HighScoreDTO> PostUserHighScore(int userId, HighScorePostPatchDTO highScore)
         {
             if(_userRepository.Find((user) => user.Id == userId) == null)
             {
