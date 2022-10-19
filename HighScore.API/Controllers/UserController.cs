@@ -41,7 +41,7 @@ namespace HighScore.API.Controllers
         }
 
         [HttpPut("{userId}")]
-        public ActionResult UpdateUser(int userId, UserUpdateDTO user)
+        public ActionResult UpdateUser(int userId, UserPutDTO user)
         {
             var userToUpdate = _userRepository.Find((user) => user.Id == userId).FirstOrDefault();
 
