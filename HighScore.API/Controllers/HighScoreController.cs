@@ -71,15 +71,19 @@ namespace HighScore.API.Controllers
 
             patchDocument.ApplyTo(highScoreToPatch, ModelState);
 
-            //need to check modelstate again due to usage in patch document
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            //update resource
 
+            //need to check modelstate again due to usage in patch document
+            if (!TryValidateModel(highScoreToPatch))
+            {
+                return BadRequest(ModelState);
+            }
+
+            //update resource
             patchedResource.Score = highScoreToPatch.Score;
 
             return NoContent();
