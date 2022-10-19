@@ -1,6 +1,7 @@
 ﻿using HighScore.API.Models;
 using HighScore.API.Repositories;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HighScore.API.Controllers
@@ -45,6 +46,45 @@ namespace HighScore.API.Controllers
         }
 
 
+        [HttpPatch]
+        public ActionResult PatchUserHighScore(int userId, JsonPatchDocument<HighScorePostPatchDTO> patchDocument)
+        {
+            var highScoreQuery = _highScoreRepository.Find((highscore) => highscore.UserId == userId).ToList();
+
+            if (highScoreQuery.Count == 0)
+            {
+                return NotFound();
+            }
+
+            if(highScoreQuery.Count > 1)
+            {
+                return BadRequest();
+            }
+
+            var patchedResource = highScoreQuery.First();
+
+            HighScorePostPatchDTO highScoreToPatch = new HighScorePostPatchDTO()
+            {
+                Score = patchedResource.Score
+
+            };
+
+            patchDocument.ApplyTo(highScoreToPatch, ModelState);
+
+            //need to check modelstate again due to usage in patch document
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            //update resource
+
+            patchedResource.Score = highScoreToPatch.Score;
+
+            return NoContent();
+
+        }
 
     }
 
