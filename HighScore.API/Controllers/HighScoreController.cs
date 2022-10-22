@@ -6,14 +6,29 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HighScore.API.Controllers
 {
-    [Route("api/users/{userId}/highscores")]
+    [Route("api/")]
     [ApiController]
     public class HighScoreController : ControllerBase
     {
         private IRepository<HighScoreDTO> _highScoreRepository = HighScoreInMemoryRepository.Instance;
         private IRepository<UserDTO> _userRepository = UserInMemoryRepository.Instance;
 
-        [HttpGet(Name = "GetUserHighScores")]
+        [HttpGet(("highscores"))]
+        public ActionResult<IEnumerable<HighScoreDTO>> GetHighScores()
+        {
+            var highScoreQuery = _highScoreRepository.GetAll().ToList();
+
+            if(highScoreQuery.Count == 0)
+            {
+                return NoContent();
+            }
+
+            return Ok(highScoreQuery);
+
+        }
+
+
+        [HttpGet(("users/{userId}/highscores"), Name = "GetUserHighScores")]
         public ActionResult<IEnumerable<HighScoreDTO>> GetUserHighScores(int userId)
         {
             var highScoreQuery = _highScoreRepository.Find((highscore) => highscore.UserId == userId).ToList();
@@ -26,7 +41,7 @@ namespace HighScore.API.Controllers
             return Ok(highScoreQuery);
         }
 
-        [HttpPost]
+        [HttpPost("users/{userId}/highscores")]
         public ActionResult PostUserHighScore(int userId, HighScorePostPatchDTO highScore)
         {
             if(_userRepository.Find((user) => user.Id == userId) == null)
@@ -45,8 +60,23 @@ namespace HighScore.API.Controllers
             return CreatedAtRoute("GetUserHighScores", routeValues, createdResource);
         }
 
+        [HttpDelete("highscores/{highScoreId}")]
+        public ActionResult DeleteHighScore(int highScoreId)
+        {
+            var highScoreToDelete = _highScoreRepository.Find((highScore) => highScore.Id == highScoreId).FirstOrDefault();
 
-        [HttpPatch]
+            if(highScoreToDelete == null)
+            {
+                return NotFound();
+            }
+
+            _highScoreRepository.Delete(highScoreToDelete);
+
+            return NoContent();
+        }
+
+
+        [HttpPatch(("users/{userId}/highscores"))]
         public ActionResult PatchUserHighScore(int userId, JsonPatchDocument<HighScorePostPatchDTO> patchDocument)
         {
             var highScoreQuery = _highScoreRepository.Find((highscore) => highscore.UserId == userId).ToList();

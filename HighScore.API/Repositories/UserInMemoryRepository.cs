@@ -35,5 +35,10 @@ namespace HighScore.API.Repositories
         {
             _users.Add(item);
         }
+
+        public void Delete(UserDTO item)
+        {
+            _users.Remove(item);
+        }
     }
 }
