@@ -7,7 +7,7 @@ namespace HighScore.API.Repositories
     public class InMemoryHighScoreRepository : IRepository<HighScoreDTO>
     {
         private List<HighScoreDTO> _data { get; set; }
-        public InMemoryHighScoreRepository() : base()
+        public InMemoryHighScoreRepository()
         {
             _data = new List<HighScoreDTO>()
             {
