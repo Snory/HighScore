@@ -1,3 +1,7 @@
+
+using HighScore.API.Models;
+using HighScore.API.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,6 +16,10 @@ builder.Services.AddControllers((options) =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// for in memory data it has to be singleton otherwise changes will not be reflected, otherwise scope is better?
+builder.Services.AddSingleton(typeof(IRepository<UserDTO>), typeof(InMemoryUserRepository));
+builder.Services.AddSingleton(typeof(IRepository<HighScoreDTO>), typeof(InMemoryHighScoreRepository));
 
 var app = builder.Build();
 

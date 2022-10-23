@@ -10,8 +10,14 @@ namespace HighScore.API.Controllers
     [ApiController]
     public class HighScoreController : ControllerBase
     {
-        private IRepository<HighScoreDTO> _highScoreRepository = HighScoreInMemoryRepository.Instance;
-        private IRepository<UserDTO> _userRepository = UserInMemoryRepository.Instance;
+        private IRepository<HighScoreDTO> _highScoreRepository;
+        private IRepository<UserDTO> _userRepository;
+
+        public HighScoreController(IRepository<HighScoreDTO> highScoreRepository, IRepository<UserDTO> userRepository)
+        {
+            _highScoreRepository = highScoreRepository;
+            _userRepository = userRepository;
+        }
 
         [HttpGet(("highscores"))]
         public ActionResult<IEnumerable<HighScoreDTO>> GetHighScores()

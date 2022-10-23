@@ -10,7 +10,12 @@ namespace HighScore.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private IRepository<UserDTO> _userRepository = UserInMemoryRepository.Instance;
+        private IRepository<UserDTO> _userRepository;
+
+        public UserController(IRepository<UserDTO> userRepository)
+        {
+            _userRepository = userRepository;
+        }
         
         //default routing attribute based on router attribute defined for class
         [HttpGet]
