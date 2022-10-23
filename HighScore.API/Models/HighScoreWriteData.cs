@@ -2,7 +2,7 @@
 
 namespace HighScore.API.Models
 {
-    public class HighScorePostPatchDTO
+    public class HighScoreWriteData
     {
         [Required]
         public float Score { get; set; }

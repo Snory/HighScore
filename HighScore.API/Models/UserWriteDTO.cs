@@ -2,7 +2,7 @@
 
 namespace HighScore.API.Models
 {
-    public class UserPutDTO
+    public class UserWriteData
     {
         [Required]
         [MaxLength(100)]

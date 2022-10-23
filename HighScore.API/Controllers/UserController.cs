@@ -16,6 +16,17 @@ namespace HighScore.API.Controllers
         {
             _userRepository = userRepository;
         }
+
+        [HttpPost]
+        public ActionResult PostUser(UserWriteData userData)
+        {
+            UserDTO createdResource = new UserDTO() { Id = 1, Name = userData.Name };
+            _userRepository.Add(createdResource);
+
+            var routeValues = new { userId = createdResource.Id };
+
+            return CreatedAtRoute("GetUser", routeValues, createdResource);
+        }
         
         //default routing attribute based on router attribute defined for class
         [HttpGet]
@@ -32,10 +43,10 @@ namespace HighScore.API.Controllers
 
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<UserDTO> GetUser(int id)
+        [HttpGet("{userId}",Name = "GetUser")]
+        public ActionResult<UserDTO> GetUser(int userId)
         {
-            var userQuery = _userRepository.Find((user) => user.Id == id).First();
+            var userQuery = _userRepository.Find((user) => user.Id == userId).First();
             
             if(userQuery == null)
             {
@@ -46,7 +57,7 @@ namespace HighScore.API.Controllers
         }
 
         [HttpPut("{userId}")]
-        public ActionResult UpdateUser(int userId, UserPutDTO user)
+        public ActionResult UpdateUser(int userId, UserWriteData user)
         {
             var userToUpdate = _userRepository.Find((user) => user.Id == userId).FirstOrDefault();
 

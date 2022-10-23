@@ -48,7 +48,7 @@ namespace HighScore.API.Controllers
         }
 
         [HttpPost("users/{userId}/highscores")]
-        public ActionResult PostUserHighScore(int userId, HighScorePostPatchDTO highScore)
+        public ActionResult PostUserHighScore(int userId, HighScoreWriteData highScore)
         {
             if(_userRepository.Find((user) => user.Id == userId) == null)
             {
@@ -83,7 +83,7 @@ namespace HighScore.API.Controllers
 
 
         [HttpPatch(("users/{userId}/highscores"))]
-        public ActionResult PatchUserHighScore(int userId, JsonPatchDocument<HighScorePostPatchDTO> patchDocument)
+        public ActionResult PatchUserHighScore(int userId, JsonPatchDocument<HighScoreWriteData> patchDocument)
         {
             var highScoreQuery = _highScoreRepository.Find((highscore) => highscore.UserId == userId).ToList();
 
@@ -99,7 +99,7 @@ namespace HighScore.API.Controllers
 
             var patchedResource = highScoreQuery.First();
 
-            HighScorePostPatchDTO highScoreToPatch = new HighScorePostPatchDTO()
+            HighScoreWriteData highScoreToPatch = new HighScoreWriteData()
             {
                 Score = patchedResource.Score
 
