@@ -1,6 +1,7 @@
 
-using HighScore.API.Models;
-using HighScore.API.Repositories;
+
+using HighScore.Data.Repositories;
+using HighScore.Domain.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

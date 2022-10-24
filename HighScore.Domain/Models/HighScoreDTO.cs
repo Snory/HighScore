@@ -1,4 +1,4 @@
-﻿namespace HighScore.API.Models
+﻿namespace HighScore.Domain.Models
 {
     public class HighScoreDTO
     {

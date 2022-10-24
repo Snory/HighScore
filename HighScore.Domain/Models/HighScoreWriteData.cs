@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HighScore.API.Models
+namespace HighScore.Domain.Models
 {
     public class HighScoreWriteData
     {

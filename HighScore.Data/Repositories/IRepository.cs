@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace HighScore.API.Repositories
+namespace HighScore.Data.Repositories
 {
     public interface IRepository<T> where T: class
     {

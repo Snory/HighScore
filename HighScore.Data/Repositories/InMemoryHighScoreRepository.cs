@@ -1,8 +1,8 @@
-﻿using HighScore.API.Models;
+﻿using HighScore.Domain.Models;
 using System.Linq.Expressions;
 using System.Xml.Linq;
 
-namespace HighScore.API.Repositories
+namespace HighScore.Data.Repositories
 {
     public class InMemoryHighScoreRepository : IRepository<HighScoreDTO>
     {
