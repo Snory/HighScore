@@ -1,4 +1,5 @@
 ﻿using HighScore.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Xml.Linq;
 
@@ -15,26 +16,32 @@ namespace HighScore.Data.Repositories
             };
         }
 
-        public void Add(HighScoreDTO item)
+        public async Task Add(HighScoreDTO item)
         {
+            await Task.Delay(0); //ugly hack to have it async till i will find out how to do in memory with EF
             _data.Add(item);
         }
 
-        public void Delete(HighScoreDTO item)
+        public async Task Delete(HighScoreDTO item)
         {
+            await Task.Delay(0); //ugly hack to have it async till i will find out how to do in memory with EF
             _data.Remove(item);
         }
 
-        public IEnumerable<HighScoreDTO> Find(Expression<Func<HighScoreDTO, bool>> predicate)
+        public async Task<IEnumerable<HighScoreDTO>> Find(Expression<Func<HighScoreDTO, bool>> predicate)
         {
-            return _data
-                   .AsQueryable()
-                   .Where(predicate)
-                   .ToList();
+            var data = await
+                       _data
+                       .AsQueryable()
+                       .Where(predicate)
+                       .ToListAsync();
+
+            return data;
         }
 
-        public IEnumerable<HighScoreDTO> GetAll()
+        public async Task<IEnumerable<HighScoreDTO>> GetAll()
         {
+            await Task.Delay(0); //ugly hack to have it async till i will find out how to do in memory with EF
             return _data;
         }
     }

@@ -20,11 +20,11 @@ namespace HighScore.API.Controllers
         }
 
         [HttpGet(("highscores"))]
-        public ActionResult<IEnumerable<HighScoreDTO>> GetHighScores()
+        public async Task<ActionResult<IEnumerable<HighScoreDTO>>> GetHighScores()
         {
-            var highScoreQuery = _highScoreRepository.GetAll().ToList();
+            var highScoreQuery = (await _highScoreRepository.GetAll()).ToList();
 
-            if(highScoreQuery.Count == 0)
+            if (highScoreQuery.Count == 0)
             {
                 return NoContent();
             }
@@ -35,9 +35,9 @@ namespace HighScore.API.Controllers
 
 
         [HttpGet(("users/{userId}/highscores"), Name = "GetUserHighScores")]
-        public ActionResult<IEnumerable<HighScoreDTO>> GetUserHighScores(int userId)
+        public async Task<ActionResult<IEnumerable<HighScoreDTO>>> GetUserHighScores(int userId)
         {
-            var highScoreQuery = _highScoreRepository.Find((highscore) => highscore.UserId == userId).ToList();
+            var highScoreQuery = ( await _highScoreRepository.Find((highscore) => highscore.UserId == userId)).ToList();
 
             if(highScoreQuery.Count == 0)
             {
@@ -48,17 +48,18 @@ namespace HighScore.API.Controllers
         }
 
         [HttpPost("users/{userId}/highscores")]
-        public ActionResult PostUserHighScore(int userId, HighScoreWriteDataDTO highScore)
+        public async Task<ActionResult> PostUserHighScore(int userId, HighScoreWriteDataDTO highScore)
         {
-            if(_userRepository.Find((user) => user.Id == userId) == null)
+            var users = await _userRepository.Find((user) => user.Id == userId);
+
+            if (users == null)
             {
                 return NotFound();
             }
 
-
             HighScoreDTO createdResource = new HighScoreDTO() { Id = 1, Score = highScore.Score, UserId = userId };
 
-            _highScoreRepository.Add(createdResource);
+            await _highScoreRepository.Add(createdResource);
 
             var routeValues = new { userId = userId };
 
@@ -67,25 +68,26 @@ namespace HighScore.API.Controllers
         }
 
         [HttpDelete("highscores/{highScoreId}")]
-        public ActionResult DeleteHighScore(int highScoreId)
+        public async  Task<ActionResult> DeleteHighScore(int highScoreId)
         {
-            var highScoreToDelete = _highScoreRepository.Find((highScore) => highScore.Id == highScoreId).FirstOrDefault();
+
+            var highScoreToDelete = (await _highScoreRepository.Find((highScore) => highScore.Id == highScoreId)).FirstOrDefault();
 
             if(highScoreToDelete == null)
             {
                 return NotFound();
             }
 
-            _highScoreRepository.Delete(highScoreToDelete);
+            await _highScoreRepository.Delete(highScoreToDelete);
 
             return NoContent();
         }
 
 
         [HttpPatch(("users/{userId}/highscores"))]
-        public ActionResult PatchUserHighScore(int userId, JsonPatchDocument<HighScoreWriteDataDTO> patchDocument)
+        public async Task<ActionResult> PatchUserHighScore(int userId, JsonPatchDocument<HighScoreWriteDataDTO> patchDocument)
         {
-            var highScoreQuery = _highScoreRepository.Find((highscore) => highscore.UserId == userId).ToList();
+            var highScoreQuery = (await _highScoreRepository.Find((highscore) => highscore.UserId == userId)).ToList();
 
             if (highScoreQuery.Count == 0)
             {

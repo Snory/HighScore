@@ -4,14 +4,13 @@ namespace HighScore.Data.Repositories
 {
     public interface IRepository<T> where T: class
     {
-        public void Add(T item);
+        public Task Add(T item);
 
-        public void Delete(T item);
+        public Task Delete(T item);
 
-        public IEnumerable<T> GetAll();
+        public Task<IEnumerable<T>> GetAll();
 
-        public IEnumerable<T> Find(Expression<Func<T, bool>> predicate);
-
+        public Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate);
     
     }
 }

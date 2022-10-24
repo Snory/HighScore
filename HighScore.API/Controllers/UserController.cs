@@ -18,10 +18,10 @@ namespace HighScore.API.Controllers
         }
 
         [HttpPost]
-        public ActionResult PostUser(UserWriteData userData)
+        public async Task<ActionResult> PostUser(UserWriteData userData)
         {
             UserDTO createdResource = new UserDTO() { Id = 1, Name = userData.Name };
-            _userRepository.Add(createdResource);
+            await _userRepository.Add(createdResource);
 
             var routeValues = new { userId = createdResource.Id };
 
@@ -30,9 +30,9 @@ namespace HighScore.API.Controllers
         
         //default routing attribute based on router attribute defined for class
         [HttpGet]
-        public ActionResult<IEnumerable<UserDTO>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
         {
-            var usersQuery = _userRepository.GetAll();
+            var usersQuery = await _userRepository.GetAll();
 
             if (usersQuery == null)
             {
@@ -44,9 +44,9 @@ namespace HighScore.API.Controllers
         }
 
         [HttpGet("{userId}",Name = "GetUser")]
-        public ActionResult<UserDTO> GetUser(int userId)
+        public async Task<ActionResult<UserDTO>> GetUser(int userId)
         {
-            var userQuery = _userRepository.Find((user) => user.Id == userId).First();
+            var userQuery = (await _userRepository.Find((user) => user.Id == userId)).First();
             
             if(userQuery == null)
             {
@@ -57,9 +57,9 @@ namespace HighScore.API.Controllers
         }
 
         [HttpPut("{userId}")]
-        public ActionResult UpdateUser(int userId, UserWriteData user)
+        public async Task<ActionResult> UpdateUser(int userId, UserWriteData user)
         {
-            var userToUpdate = _userRepository.Find((user) => user.Id == userId).FirstOrDefault();
+            var userToUpdate = (await _userRepository.Find((user) => user.Id == userId)).FirstOrDefault();
 
             if(userToUpdate == null)
             {
