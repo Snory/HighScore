@@ -14,4 +14,8 @@
     <ProjectReference Include="..\HighScore.Domain\HighScore.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DBContext\" />
+  </ItemGroup>
+
 </Project>
