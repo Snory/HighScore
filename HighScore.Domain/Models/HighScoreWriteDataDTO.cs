@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HighScore.API.Models
+namespace HighScore.Domain.Models
 {
-    public class HighScoreWriteData
+    public class HighScoreWriteDataDTO
     {
         [Required]
         public float Score { get; set; }

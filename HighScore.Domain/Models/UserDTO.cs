@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace HighScore.API.Models
+namespace HighScore.Domain.Models
 {
     public class UserDTO
     {

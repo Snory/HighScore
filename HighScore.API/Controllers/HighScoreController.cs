@@ -1,6 +1,6 @@
-﻿using HighScore.API.Models;
-using HighScore.API.Repositories;
-using Microsoft.AspNetCore.Http;
+﻿
+using HighScore.Data.Repositories;
+using HighScore.Domain.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,7 +48,7 @@ namespace HighScore.API.Controllers
         }
 
         [HttpPost("users/{userId}/highscores")]
-        public ActionResult PostUserHighScore(int userId, HighScoreWriteData highScore)
+        public ActionResult PostUserHighScore(int userId, HighScoreWriteDataDTO highScore)
         {
             if(_userRepository.Find((user) => user.Id == userId) == null)
             {
@@ -83,7 +83,7 @@ namespace HighScore.API.Controllers
 
 
         [HttpPatch(("users/{userId}/highscores"))]
-        public ActionResult PatchUserHighScore(int userId, JsonPatchDocument<HighScoreWriteData> patchDocument)
+        public ActionResult PatchUserHighScore(int userId, JsonPatchDocument<HighScoreWriteDataDTO> patchDocument)
         {
             var highScoreQuery = _highScoreRepository.Find((highscore) => highscore.UserId == userId).ToList();
 
@@ -99,7 +99,7 @@ namespace HighScore.API.Controllers
 
             var patchedResource = highScoreQuery.First();
 
-            HighScoreWriteData highScoreToPatch = new HighScoreWriteData()
+            HighScoreWriteDataDTO highScoreToPatch = new HighScoreWriteDataDTO()
             {
                 Score = patchedResource.Score
 
