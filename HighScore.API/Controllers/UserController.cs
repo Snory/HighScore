@@ -1,5 +1,6 @@
 ﻿using HighScore.Data.Repositories;
 using HighScore.Domain.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -11,10 +12,13 @@ namespace HighScore.API.Controllers
     public class UserController : ControllerBase
     {
         private IRepository<UserDTO> _userRepository;
+        private IRepository<HighScoreDTO> _highScoreRepository;
 
-        public UserController(IRepository<UserDTO> userRepository)
+
+        public UserController(IRepository<UserDTO> userRepository, IRepository<HighScoreDTO> highScoreRepository)
         {
             _userRepository = userRepository;
+            _highScoreRepository = highScoreRepository;
         }
 
         [HttpPost]
@@ -69,7 +73,84 @@ namespace HighScore.API.Controllers
             userToUpdate.Name = user.Name;
 
             return NoContent();
-        } 
+        }
+
+        [HttpPatch(("{userId}/highscores"))]
+        public async Task<ActionResult> PatchUserHighScore(int userId, JsonPatchDocument<HighScoreWriteDataDTO> patchDocument)
+        {
+            var highScoreQuery = (await _highScoreRepository.Find((highscore) => highscore.UserId == userId)).ToList();
+
+            if (highScoreQuery.Count == 0)
+            {
+                return NotFound();
+            }
+
+            if (highScoreQuery.Count > 1)
+            {
+                return BadRequest();
+            }
+
+            var patchedResource = highScoreQuery.First();
+
+            HighScoreWriteDataDTO highScoreToPatch = new HighScoreWriteDataDTO()
+            {
+                Score = patchedResource.Score
+
+            };
+
+            patchDocument.ApplyTo(highScoreToPatch, ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            //need to check modelstate again due to usage in patch document
+            if (!TryValidateModel(highScoreToPatch))
+            {
+                return BadRequest(ModelState);
+            }
+
+            //update resource
+            patchedResource.Score = highScoreToPatch.Score;
+
+            return NoContent();
+
+        }
+
+        [HttpGet(("{userId}/highscores"), Name = "GetUserHighScores")]
+        public async Task<ActionResult<IEnumerable<HighScoreDTO>>> GetUserHighScores(int userId)
+        {
+            var highScoreQuery = (await _highScoreRepository.Find((highscore) => highscore.UserId == userId)).ToList();
+
+            if (highScoreQuery.Count == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(highScoreQuery);
+        }
+
+        [HttpPost("{userId}/highscores")]
+        public async Task<ActionResult> PostUserHighScore(int userId, HighScoreWriteDataDTO highScore)
+        {
+            var users = await _userRepository.Find((user) => user.Id == userId);
+
+            if (users == null)
+            {
+                return NotFound();
+            }
+
+            HighScoreDTO createdResource = new HighScoreDTO() { Id = 1, Score = highScore.Score, UserId = userId };
+
+            await _highScoreRepository.Add(createdResource);
+
+            var routeValues = new { userId = userId };
+
+            //https://ochzhen.com/blog/created-createdataction-createdatroute-methods-explained-aspnet-core
+            return CreatedAtRoute("GetUserHighScores", routeValues, createdResource);
+        }
 
     }
 }
