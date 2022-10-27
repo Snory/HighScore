@@ -1,7 +1,10 @@
 
 
+using HighScore.Data.Context;
 using HighScore.Data.Repositories;
+using HighScore.Domain.Entities;
 using HighScore.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,16 +14,20 @@ builder.Services.AddControllers((options) =>
 {
     options.ReturnHttpNotAcceptable = true;
 })
-.AddNewtonsoftJson() // replace defaul json input and output formatters (used for patch methods)
-;
+.AddNewtonsoftJson(); // replace defaul json input and output formatters (used for patch methods)
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// for in memory data it has to be singleton otherwise changes will not be reflected, otherwise scope is better?
-builder.Services.AddSingleton(typeof(IRepository<UserDTO>), typeof(InMemoryUserRepository));
-builder.Services.AddSingleton(typeof(IRepository<HighScoreDTO>), typeof(InMemoryHighScoreRepository));
+builder.Services.AddDbContext<HighScoreContext>(
+    //(dbContextOptions)  => dbContextOptions.UseSqlServer(builder.Configuration["ConnectionStrings:HighScoreConnectionString"])
+);
+
+builder.Services.AddScoped(typeof(IRepository<UserDTO>), typeof(EntityUserRepository));
+builder.Services.AddScoped(typeof(IRepository<HighScoreDTO>), typeof(EntityHighScoreRepository));
+
 
 var app = builder.Build();
 
@@ -41,13 +48,5 @@ app.UseEndpoints(
     );
 
 app.MapControllers();
-
-
-//app.Run(async (context) =>
-//{
-//    await context.Response.WriteAsync("Hello world");
-//});
-
-
 
 app.Run();

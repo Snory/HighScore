@@ -29,9 +29,7 @@ namespace HighScore.API.Controllers
 
             return Ok(highScoreQuery);
 
-        }
-
-    
+        }    
 
         [HttpDelete("highscores/{highScoreId}")]
         public async  Task<ActionResult> DeleteHighScore(int highScoreId)
