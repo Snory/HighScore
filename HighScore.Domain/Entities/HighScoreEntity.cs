@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace HighScore.Domain.Entities
 {
-    public class HighScore
+    [Table("HighScores")]
+    public class HighScoreEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -16,7 +17,7 @@ namespace HighScore.Domain.Entities
         [Required]
         public float Score { get; set; }
         [Required]
-        public User User { get; set; } = null!;
+        public UserEntity User { get; set; } = null!;
         public int UserId { get; set; }
     }
 }

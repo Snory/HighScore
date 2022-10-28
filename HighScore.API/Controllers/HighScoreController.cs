@@ -1,5 +1,7 @@
 ﻿
+using AutoMapper;
 using HighScore.Data.Repositories;
+using HighScore.Domain.Entities;
 using HighScore.Domain.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -10,12 +12,15 @@ namespace HighScore.API.Controllers
     [ApiController]
     public class HighScoreController : ControllerBase
     {
-        private IRepository<HighScoreDTO> _highScoreRepository;
+        private IRepository<HighScoreEntity> _highScoreRepository;
+        private IMapper _mapper;
    
-        public HighScoreController(IRepository<HighScoreDTO> highScoreRepository)
+        public HighScoreController(IRepository<HighScoreEntity> highScoreRepository, IMapper mapper)
         {
-            _highScoreRepository = highScoreRepository;
+            _highScoreRepository = highScoreRepository ?? throw new ArgumentNullException(nameof(highScoreRepository));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
+
 
         [HttpGet(("highscores"))]
         public async Task<ActionResult<IEnumerable<HighScoreDTO>>> GetHighScores()
@@ -27,17 +32,17 @@ namespace HighScore.API.Controllers
                 return NoContent();
             }
 
-            return Ok(highScoreQuery);
+            return Ok(_mapper.Map<IEnumerable<HighScoreDTO>>(highScoreQuery));
 
-        }    
+        }
 
         [HttpDelete("highscores/{highScoreId}")]
-        public async  Task<ActionResult> DeleteHighScore(int highScoreId)
+        public async Task<ActionResult> DeleteHighScore(int highScoreId)
         {
 
             var highScoreToDelete = (await _highScoreRepository.Find((highScore) => highScore.Id == highScoreId)).FirstOrDefault();
 
-            if(highScoreToDelete == null)
+            if (highScoreToDelete == null)
             {
                 return NotFound();
             }
@@ -47,9 +52,9 @@ namespace HighScore.API.Controllers
             return NoContent();
         }
 
-        
+
 
     }
 
-   
+
 }

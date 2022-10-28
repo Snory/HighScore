@@ -21,7 +21,7 @@ namespace HighScore.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("HighScore.Domain.Entities.HighScore", b =>
+            modelBuilder.Entity("HighScoreEntity.Domain.Entities.HighScoreEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -39,10 +39,10 @@ namespace HighScore.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("HighScores");
+                    b.ToTable("HighScores", (string)null);
                 });
 
-            modelBuilder.Entity("HighScore.Domain.Entities.User", b =>
+            modelBuilder.Entity("HighScoreEntity.Domain.Entities.UserEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -57,21 +57,21 @@ namespace HighScore.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("HighScore.Domain.Entities.HighScore", b =>
+            modelBuilder.Entity("HighScoreEntity.Domain.Entities.HighScoreEntity", b =>
                 {
-                    b.HasOne("HighScore.Domain.Entities.User", "User")
+                    b.HasOne("HighScoreEntity.Domain.Entities.UserEntity", "UserEntity")
                         .WithMany("HighScores")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("UserEntity");
                 });
 
-            modelBuilder.Entity("HighScore.Domain.Entities.User", b =>
+            modelBuilder.Entity("HighScoreEntity.Domain.Entities.UserEntity", b =>
                 {
                     b.Navigation("HighScores");
                 });

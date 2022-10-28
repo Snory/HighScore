@@ -1,4 +1,6 @@
-﻿using HighScore.Domain.Models;
+﻿using HighScore.Data.Context;
+using HighScore.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,26 +10,42 @@ using System.Threading.Tasks;
 
 namespace HighScore.Data.Repositories
 {
-    public class EntityHighScoreRepository : IRepository<HighScoreDTO>
+    public class EntityHighScoreRepository : IRepository<HighScoreEntity>
     {
-        public Task Add(HighScoreDTO item)
+        HighScoreContext _context;
+        public EntityHighScoreRepository(HighScoreContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public Task Delete(HighScoreDTO item)
+        public async Task<HighScoreEntity> Add(HighScoreEntity item)
         {
-            throw new NotImplementedException();
+            await _context.AddAsync(item);
+            await SaveChanges();
+
+            return item;
         }
 
-        public Task<IEnumerable<HighScoreDTO>> Find(Expression<Func<HighScoreDTO, bool>> predicate)
+        public async Task Delete(HighScoreEntity item)
         {
-            throw new NotImplementedException();
+            _context.Remove(item);
+            await SaveChanges();
         }
 
-        public Task<IEnumerable<HighScoreDTO>> GetAll()
+        public async Task<IEnumerable<HighScoreEntity>> Find(Expression<Func<HighScoreEntity, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.HighScores.AsQueryable().Where(predicate).ToListAsync();
         }
+
+        public async Task<IEnumerable<HighScoreEntity>> GetAll()
+        {
+            return await _context.HighScores.ToListAsync();
+        }
+
+        public async Task SaveChanges()
+        {
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

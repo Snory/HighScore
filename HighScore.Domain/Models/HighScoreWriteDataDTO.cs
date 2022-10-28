@@ -6,5 +6,7 @@ namespace HighScore.Domain.Models
     {
         [Required]
         public float Score { get; set; }
+
+        public int UserId { get; set; }
     }
 }

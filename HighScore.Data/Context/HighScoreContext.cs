@@ -1,18 +1,15 @@
 ﻿using HighScore.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace HighScore.Data.Context
 {
     public class HighScoreContext : DbContext
     {
-        public DbSet<User> Users { get; set; } = null!;
-        public DbSet<HighScore.Domain.Entities.HighScore> HighScores { get; set; } = null!;
+        public DbSet<UserEntity> Users { get; set; } = null!;
+        public DbSet<HighScoreEntity> HighScores { get; set; } = null!;
 
+        //works but i have to run the migratons with more complicated cmdlet + add dependency to .API for EF
         //public HighScoreContext(DbContextOptions<HighScoreContext> options) : base(options)
         //{
 
@@ -20,7 +17,7 @@ namespace HighScore.Data.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlServer("Data source = sensei\\konoha; Initial Catalog=HighScore; Integrated Security=True;"); //why cant i use constructor?
+            options.UseSqlServer("Data source = sensei\\konoha; Initial Catalog=HighScore; Integrated Security=True;"); 
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using HighScore.Data.Repositories;
+﻿using AutoMapper;
+using HighScore.Data.Repositories;
+using HighScore.Domain.Entities;
 using HighScore.Domain.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -11,27 +13,29 @@ namespace HighScore.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private IRepository<UserDTO> _userRepository;
-        private IRepository<HighScoreDTO> _highScoreRepository;
+        private IRepository<UserEntity> _userRepository;
+        private IRepository<HighScoreEntity> _highScoreRepository;
+        private IMapper _mapper;
 
 
-        public UserController(IRepository<UserDTO> userRepository, IRepository<HighScoreDTO> highScoreRepository)
+        public UserController(IRepository<UserEntity> userRepository, IRepository<HighScoreEntity> highScoreRepository, IMapper mapper)
         {
-            _userRepository = userRepository;
-            _highScoreRepository = highScoreRepository;
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _highScoreRepository = highScoreRepository ?? throw new ArgumentNullException(nameof(highScoreRepository));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpPost]
         public async Task<ActionResult> PostUser(UserWriteData userData)
         {
-            UserDTO createdResource = new UserDTO() { Id = 1, Name = userData.Name };
-            await _userRepository.Add(createdResource);
+            UserEntity userAdded = await _userRepository.Add(_mapper.Map<UserEntity>(userData));
 
-            var routeValues = new { userId = createdResource.Id };
+            var routeValues = new { userId = userAdded.Id };
 
-            return CreatedAtRoute("GetUser", routeValues, createdResource);
+            return CreatedAtRoute("GetUser", routeValues, _mapper.Map<UserDTO>(userAdded));
         }
-        
+
+
         //default routing attribute based on router attribute defined for class
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
@@ -43,13 +47,13 @@ namespace HighScore.API.Controllers
                 return NotFound();
             }
 
-            return Ok(usersQuery);
-
+            return Ok(_mapper.Map<IEnumerable<UserDTO>>(usersQuery));
         }
 
         [HttpGet("{userId}",Name = "GetUser")]
         public async Task<ActionResult<UserDTO>> GetUser(int userId)
         {
+
             var userQuery = (await _userRepository.Find((user) => user.Id == userId)).First();
             
             if(userQuery == null)
@@ -57,20 +61,21 @@ namespace HighScore.API.Controllers
                 return NotFound();
             }
 
-            return Ok(userQuery);
+            return Ok(_mapper.Map<UserDTO>(userQuery));
         }
 
         [HttpPut("{userId}")]
-        public async Task<ActionResult> UpdateUser(int userId, UserWriteData user)
+        public async Task<ActionResult> UpdateUser(int userId, UserWriteData userData)
         {
             var userToUpdate = (await _userRepository.Find((user) => user.Id == userId)).FirstOrDefault();
 
-            if(userToUpdate == null)
+            if (userToUpdate == null)
             {
                 return NotFound();
             }
 
-            userToUpdate.Name = user.Name;
+            _mapper.Map(userData,userToUpdate); //this mapping will cause change to the object and therefore updated,lol, but do i like it?
+            await _highScoreRepository.SaveChanges();
 
             return NoContent();
         }
@@ -90,30 +95,29 @@ namespace HighScore.API.Controllers
                 return BadRequest();
             }
 
-            var patchedResource = highScoreQuery.First();
+            var highScoreToPatch = highScoreQuery.First();
 
-            HighScoreWriteDataDTO highScoreToPatch = new HighScoreWriteDataDTO()
+            HighScoreWriteDataDTO highScorePatched = new HighScoreWriteDataDTO()
             {
-                Score = patchedResource.Score
-
+                Score = highScoreToPatch.Score
             };
 
-            patchDocument.ApplyTo(highScoreToPatch, ModelState);
+            patchDocument.ApplyTo(highScorePatched, ModelState);
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-
             //need to check modelstate again due to usage in patch document
-            if (!TryValidateModel(highScoreToPatch))
+            if (!TryValidateModel(highScorePatched))
             {
                 return BadRequest(ModelState);
             }
 
             //update resource
-            patchedResource.Score = highScoreToPatch.Score;
+            _mapper.Map(highScorePatched, highScoreToPatch);
+            await _highScoreRepository.SaveChanges();
 
             return NoContent();
 
@@ -129,28 +133,30 @@ namespace HighScore.API.Controllers
                 return NotFound();
             }
 
-            return Ok(highScoreQuery);
+            return Ok(_mapper.Map<IEnumerable<HighScoreDTO>>(highScoreQuery));
         }
 
         [HttpPost("{userId}/highscores")]
         public async Task<ActionResult> PostUserHighScore(int userId, HighScoreWriteDataDTO highScore)
         {
-            var users = await _userRepository.Find((user) => user.Id == userId);
+            var users = await _userRepository.Find((userData) => userData.Id == userId);
 
             if (users == null)
             {
                 return NotFound();
             }
 
-            HighScoreDTO createdResource = new HighScoreDTO() { Id = 1, Score = highScore.Score, UserId = userId };
+            highScore.UserId = userId;
 
-            await _highScoreRepository.Add(createdResource);
+            HighScoreEntity highscoreAdded = await _highScoreRepository.Add(_mapper.Map<HighScoreEntity>(highScore));
 
             var routeValues = new { userId = userId };
 
             //https://ochzhen.com/blog/created-createdataction-createdatroute-methods-explained-aspnet-core
-            return CreatedAtRoute("GetUserHighScores", routeValues, createdResource);
+                //dobrý na tom je, že to nejspíš vynechá tělo procedury a rovnou to jde do returnu
+                //protože jsem jednu metodu v těle měl s throwem kvuli chybejici implementaci
+                //a i tak to routu zvládlo vytvořit a vrátit
+            return CreatedAtRoute("GetUserHighScores", routeValues, _mapper.Map<HighScoreDTO>(highscoreAdded));
         }
-
     }
 }

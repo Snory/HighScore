@@ -1,6 +1,6 @@
 ﻿using HighScore.Data.Context;
 using HighScore.Domain.Entities;
-using HighScore.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,42 +10,43 @@ using System.Threading.Tasks;
 
 namespace HighScore.Data.Repositories
 {
-    public class EntityUserRepository : IRepository<UserDTO>
+    public class EntityUserRepository : IRepository<UserEntity>
     {
+        private HighScoreContext _context;
 
-        HighScoreContext _context;
-
-        public EntityUserRepository(HighScoreContext HighScoreDBContext)
+        public EntityUserRepository(HighScoreContext context)
         {
-            _context = HighScoreDBContext;
+            _context = context;
         }
 
-        public async Task Add(UserDTO item)
+        public async Task<UserEntity> Add(UserEntity item)
         {
-            //map dto to entity class
-            User user = new User()
-            {
-                Name = item.Name
-            };
-
-            await _context.Users.AddAsync(user);
-            _context.SaveChanges();
-            
+           await _context.Users.AddAsync(item);
+           await SaveChanges();
+           
+           return item;
         }
 
-        public Task Delete(UserDTO item)
+        public async Task Delete(UserEntity item)
         {
-            throw new NotImplementedException();
+            _context.Remove(item);
+            await SaveChanges();
         }
 
-        public Task<IEnumerable<UserDTO>> Find(Expression<Func<UserDTO, bool>> predicate)
+        public async Task<IEnumerable<UserEntity>> Find(Expression<Func<UserEntity, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.Users.AsQueryable().Where(predicate).ToListAsync();
         }
 
-        public Task<IEnumerable<UserDTO>> GetAll()
+        public async Task<IEnumerable<UserEntity>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _context.Users.ToListAsync();
         }
+
+        public async Task SaveChanges()
+        {
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

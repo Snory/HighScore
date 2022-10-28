@@ -22,12 +22,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<HighScoreContext>(
-    //(dbContextOptions)  => dbContextOptions.UseSqlServer(builder.Configuration["ConnectionStrings:HighScoreConnectionString"])
+    //comment in HighScoreContext
+    //(dbContextOptions) => dbContextOptions.UseSqlServer(builder.Configuration["ConnectionStrings:HighScoreConnectionString"])
 );
 
-builder.Services.AddScoped(typeof(IRepository<UserDTO>), typeof(EntityUserRepository));
-builder.Services.AddScoped(typeof(IRepository<HighScoreDTO>), typeof(EntityHighScoreRepository));
-
+builder.Services.AddScoped(typeof(IRepository<UserEntity>), typeof(EntityUserRepository));
+builder.Services.AddScoped(typeof(IRepository<HighScoreEntity>), typeof(EntityHighScoreRepository));
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
