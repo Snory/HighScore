@@ -80,26 +80,20 @@ namespace HighScore.API.Controllers
             return NoContent();
         }
 
-        [HttpPatch(("{userId}/highscores"))]
-        public async Task<ActionResult> PatchUserHighScore(int userId, JsonPatchDocument<HighScoreWriteDataDTO> patchDocument)
+        [HttpPatch(("{userId}/highscores/{highScoreId}"))]
+        public async Task<ActionResult> PatchUserHighScore(int userId, int highScoreId, JsonPatchDocument<HighScoreWriteDataDTO> patchDocument)
         {
-            var highScoreQuery = (await _highScoreRepository.Find((highscore) => highscore.UserId == userId)).ToList();
+            var highScoreToPatch = (await _highScoreRepository.Find((highscore) => highscore.UserId == userId && highscore.Id == highScoreId)).FirstOrDefault();
 
-            if (highScoreQuery.Count == 0)
+            if (highScoreToPatch == null)
             {
                 return NotFound();
             }
 
-            if (highScoreQuery.Count > 1)
-            {
-                return BadRequest();
-            }
-
-            var highScoreToPatch = highScoreQuery.First();
-
             HighScoreWriteDataDTO highScorePatched = new HighScoreWriteDataDTO()
             {
-                Score = highScoreToPatch.Score
+                Score = highScoreToPatch.Score,
+                UserId = highScoreToPatch.UserId
             };
 
             patchDocument.ApplyTo(highScorePatched, ModelState);

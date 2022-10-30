@@ -18,6 +18,7 @@ namespace HighScore.Data.Context
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseSqlServer("Data source = sensei\\konoha; Initial Catalog=HighScore; Integrated Security=True;"); 
+            options.LogTo(Console.WriteLine);
         }
     }
 }
