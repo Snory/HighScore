@@ -4,8 +4,7 @@ using HighScore.Domain.Entities;
 using HighScore.Domain.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-
-
+using Newtonsoft.Json.Linq;
 
 namespace HighScore.API.Controllers
 {
@@ -28,6 +27,19 @@ namespace HighScore.API.Controllers
         [HttpPost]
         public async Task<ActionResult> PostUser(UserWriteData userData)
         {
+            var userQuery = (await _userRepository.Find((user) => user.Name == userData.Name)).First();
+
+            if (userQuery != null)
+            {
+
+                return StatusCode(400, JObject.FromObject(new { 
+                    title = $"User with a name {userData.Name} already exists",
+                    status = 400,
+                    traceId = HttpContext.TraceIdentifier
+                
+                }));
+            }
+
             UserEntity userAdded = await _userRepository.Add(_mapper.Map<UserEntity>(userData));
 
             var routeValues = new { userId = userAdded.Id };
