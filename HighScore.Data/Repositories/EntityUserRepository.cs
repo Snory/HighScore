@@ -38,6 +38,7 @@ namespace HighScore.Data.Repositories
             return await _context.Users.AsQueryable().Where(predicate).ToListAsync();
         }
 
+
         public async Task<IEnumerable<UserEntity>> GetAll()
         {
             return await _context.Users.ToListAsync();

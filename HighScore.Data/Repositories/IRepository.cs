@@ -13,6 +13,7 @@ namespace HighScore.Data.Repositories
         public Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate);
 
         public Task SaveChanges();
-    
+
+
     }
 }

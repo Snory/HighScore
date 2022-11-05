@@ -5,6 +5,7 @@ using HighScore.Domain.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using System.Linq.Expressions;
 
 namespace HighScore.API.Controllers
 {
@@ -15,13 +16,14 @@ namespace HighScore.API.Controllers
         private IRepository<UserEntity> _userRepository;
         private IRepository<HighScoreEntity> _highScoreRepository;
         private IMapper _mapper;
+        private IExpressionBuilder<UserEntity> _userExpressionBuilder;
 
-
-        public UserController(IRepository<UserEntity> userRepository, IRepository<HighScoreEntity> highScoreRepository, IMapper mapper)
+        public UserController(IRepository<UserEntity> userRepository, IRepository<HighScoreEntity> highScoreRepository, IMapper mapper, IExpressionBuilder<UserEntity> expressionBuilder)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _highScoreRepository = highScoreRepository ?? throw new ArgumentNullException(nameof(highScoreRepository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _userExpressionBuilder = expressionBuilder ?? throw new ArgumentNullException(nameof(expressionBuilder));
         }
 
         [HttpPost]
@@ -52,14 +54,43 @@ namespace HighScore.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
         {
-            var usersQuery = await _userRepository.GetAll();
+       
+            var collection = await _userRepository.GetAll();   
 
-            if (usersQuery == null)
+            if (collection == null)
             {
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<IEnumerable<UserDTO>>(usersQuery));
+            return Ok(_mapper.Map<IEnumerable<UserDTO>>(collection));
+        }
+
+        //default routing attribute based on router attribute defined for class
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers(string? name, string? searchQuery)
+        {
+            var nameFilter = _userExpressionBuilder.CreateExpression((users) => 1==1);
+            var nameSearch = _userExpressionBuilder.CreateExpression((users) => 1==1);
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                nameFilter = _userExpressionBuilder.CreateExpression((users) => users.Name == name);
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                nameSearch = _userExpressionBuilder.CreateExpression((users) => users.Name.Contains(searchQuery));
+            }
+
+            var collection = await _userRepository.Find(_userExpressionBuilder.And(nameFilter, nameSearch));
+
+            if(collection == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<IEnumerable<UserDTO>>(collection));
+
         }
 
         [HttpGet("{userId}",Name = "GetUser")]
@@ -75,6 +106,9 @@ namespace HighScore.API.Controllers
 
             return Ok(_mapper.Map<UserDTO>(userQuery));
         }
+
+
+
 
         [HttpPut("{userId}")]
         public async Task<ActionResult> UpdateUser(int userId, UserWriteData userData)
