@@ -23,5 +23,14 @@ namespace HighScore.Data.Repositories
 
             return Expression.Lambda<Func<T, bool>>(andAlso, expresParams);
         }
+
+        public static Expression<Func<T, bool>> Or<T>(this Expression<Func<T, bool>> expression1, Expression<Func<T, bool>> expression2)
+        {
+            var expresParams = expression1.Parameters; // (user) => user.id == 1..., (user) = Expression.Parameter(typeof(User))
+
+            var or = Expression.Or(expression1.Body, expression2.Body);
+
+            return Expression.Lambda<Func<T, bool>>(or, expresParams);
+        }
     }
 }
