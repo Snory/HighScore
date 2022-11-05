@@ -16,14 +16,12 @@ namespace HighScore.API.Controllers
         private IRepository<UserEntity> _userRepository;
         private IRepository<HighScoreEntity> _highScoreRepository;
         private IMapper _mapper;
-        private IExpressionBuilder<UserEntity> _userExpressionBuilder;
 
-        public UserController(IRepository<UserEntity> userRepository, IRepository<HighScoreEntity> highScoreRepository, IMapper mapper, IExpressionBuilder<UserEntity> expressionBuilder)
+        public UserController(IRepository<UserEntity> userRepository, IRepository<HighScoreEntity> highScoreRepository, IMapper mapper)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _highScoreRepository = highScoreRepository ?? throw new ArgumentNullException(nameof(highScoreRepository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _userExpressionBuilder = expressionBuilder ?? throw new ArgumentNullException(nameof(expressionBuilder));
         }
 
         [HttpPost]
@@ -69,20 +67,19 @@ namespace HighScore.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers(string? name, string? searchQuery)
         {
-            var nameFilter = _userExpressionBuilder.CreateExpression((users) => 1==1);
-            var nameSearch = _userExpressionBuilder.CreateExpression((users) => 1==1);
+            var expression = ExpressionBuilder.CreateExpression<UserEntity>((users) => 1==1);
 
             if (!string.IsNullOrEmpty(name))
             {
-                nameFilter = _userExpressionBuilder.CreateExpression((users) => users.Name == name);
+                expression = expression.And((users) => users.Name == name);
             }
 
             if (!string.IsNullOrWhiteSpace(searchQuery))
             {
-                nameSearch = _userExpressionBuilder.CreateExpression((users) => users.Name.Contains(searchQuery));
+                expression = expression.And((users) => users.Name.Contains(searchQuery));
             }
 
-            var collection = await _userRepository.Find(_userExpressionBuilder.And(nameFilter, nameSearch));
+            var collection = await _userRepository.Find(expression);
 
             if(collection == null)
             {
@@ -90,7 +87,6 @@ namespace HighScore.API.Controllers
             }
 
             return Ok(_mapper.Map<IEnumerable<UserDTO>>(collection));
-
         }
 
         [HttpGet("{userId}",Name = "GetUser")]

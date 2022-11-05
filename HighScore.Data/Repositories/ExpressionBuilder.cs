@@ -8,16 +8,20 @@ using System.Threading.Tasks;
 
 namespace HighScore.Data.Repositories
 {
-    public class ExpressionBuilder<T> : IExpressionBuilder<T>
+    public static class ExpressionBuilder
     {
-        public Expression<Func<T, bool>> CreateExpression(Expression<Func<T, bool>> expresion)
+        public static Expression<Func<T, bool>> CreateExpression<T>(Expression<Func<T, bool>> expresion)
         {
             return expresion;
         }
 
-        public Expression<Func<T, bool>> And(Expression<Func<T, bool>> expression1, Expression<Func<T, bool>> expression2)
+        public static Expression<Func<T, bool>> And<T>(this Expression<Func<T, bool>> expression1, Expression<Func<T, bool>> expression2)
         {
-            return Expression.Lambda<Func<T, bool>>((Expression)Expression.AndAlso(expression1.Body, expression2.Body), (IEnumerable<ParameterExpression>)expression1.Parameters);
+            var expresParams = expression1.Parameters; // (user) => user.id == 1..., (user) = Expression.Parameter(typeof(User))
+
+            var andAlso = Expression.AndAlso(expression1.Body, expression2.Body);
+
+            return Expression.Lambda<Func<T, bool>>(andAlso, expresParams);
         }
     }
 }
