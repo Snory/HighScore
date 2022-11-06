@@ -46,37 +46,21 @@ namespace HighScore.API.Controllers
 
             return CreatedAtRoute("GetUser", routeValues, _mapper.Map<UserDTO>(userAdded));
         }
-
-
-        //default routing attribute based on router attribute defined for class
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
-        {
-       
-            var collection = await _userRepository.GetAll();   
-
-            if (collection == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(_mapper.Map<IEnumerable<UserDTO>>(collection));
-        }
-
+  
         //default routing attribute based on router attribute defined for class
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers(string? name, string? searchQuery)
         {
-            var expression = ExpressionBuilder.CreateExpression<UserEntity>((users) => 1==1);
+            var expression = ExpressionBuilder.CreateExpression<UserEntity>((hovno) => 1==1);
 
             if (!string.IsNullOrEmpty(name))
             {
-                expression = expression.And((users) => users.Name == name);
+                expression = expression.And((hovno) => hovno.Name == name);
             }
 
             if (!string.IsNullOrWhiteSpace(searchQuery))
             {
-                expression = expression.And((users) => users.Name.Contains(searchQuery));
+                expression = expression.And((hovno) => hovno.Name.Contains(searchQuery));
             }
 
             var collection = await _userRepository.Find(expression);
@@ -102,8 +86,6 @@ namespace HighScore.API.Controllers
 
             return Ok(_mapper.Map<UserDTO>(userQuery));
         }
-
-
 
 
         [HttpPut("{userId}")]
