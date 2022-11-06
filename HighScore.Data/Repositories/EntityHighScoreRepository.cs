@@ -12,7 +12,8 @@ namespace HighScore.Data.Repositories
 {
     public class EntityHighScoreRepository : IRepository<HighScoreEntity>
     {
-        HighScoreContext _context;
+        private HighScoreContext _context;
+        private const int _MAXPAGESIZE = 20;
         public EntityHighScoreRepository(HighScoreContext context)
         {
             _context = context;
@@ -30,16 +31,23 @@ namespace HighScore.Data.Repositories
         {
             _context.Remove(item);
             await SaveChanges();
-        }
+        } 
 
-        public async Task<IEnumerable<HighScoreEntity>> Find(Expression<Func<HighScoreEntity, bool>> predicate)
+        public async Task<List<HighScoreEntity>> Find(Expression<Func<HighScoreEntity, bool>> predicate, int pageNumber, int pageSize)
         {
-            return await _context.HighScores.AsQueryable().Where(predicate).ToListAsync();
-        }
+            if (pageSize > _MAXPAGESIZE)
+            {
+                pageSize = _MAXPAGESIZE;
+            }
 
-        public async Task<IEnumerable<HighScoreEntity>> GetAll()
-        {
-            return await _context.HighScores.ToListAsync();
+
+            return await 
+                    _context.HighScores.AsQueryable()
+                    .Where(predicate)
+                    .Skip(pageSize * (pageNumber - 1))
+                    .Take(pageSize)
+                    .ToListAsync();
+
         }
 
         public async Task SaveChanges()

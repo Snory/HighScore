@@ -17,6 +17,7 @@ namespace HighScore.API.Controllers
         private IRepository<HighScoreEntity> _highScoreRepository;
         private IMapper _mapper;
 
+
         public UserController(IRepository<UserEntity> userRepository, IRepository<HighScoreEntity> highScoreRepository, IMapper mapper)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
@@ -49,28 +50,29 @@ namespace HighScore.API.Controllers
   
         //default routing attribute based on router attribute defined for class
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers(string? name, string? searchQuery)
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers(string? name, string? searchQuery, int pageNumber = 1, int pageSize = 10)
         {
-            var expression = ExpressionBuilder.CreateExpression<UserEntity>((hovno) => 1==1);
+   
+            var expression = ExpressionBuilder.CreateExpression<UserEntity>((users) => 1==1);
 
             if (!string.IsNullOrEmpty(name))
             {
-                expression = expression.And((hovno) => hovno.Name == name);
+                expression = expression.And((users) => users.Name == name);
             }
 
             if (!string.IsNullOrWhiteSpace(searchQuery))
             {
-                expression = expression.And((hovno) => hovno.Name.Contains(searchQuery));
+                expression = expression.And((users) => users.Name.Contains(searchQuery));
             }
 
-            var collection = await _userRepository.Find(expression);
+            var collection = await _userRepository.Find(expression, pageNumber, pageSize);
 
             if(collection == null)
             {
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<IEnumerable<UserDTO>>(collection));
+            return Ok(_mapper.Map<List<UserDTO>>(collection));
         }
 
         [HttpGet("{userId}",Name = "GetUser")]
@@ -144,14 +146,14 @@ namespace HighScore.API.Controllers
         [HttpGet(("{userId}/highscores"), Name = "GetUserHighScores")]
         public async Task<ActionResult<IEnumerable<HighScoreDTO>>> GetUserHighScores(int userId)
         {
-            var highScoreQuery = (await _highScoreRepository.Find((highscore) => highscore.UserId == userId)).ToList();
+            var highScoreQuery = await _highScoreRepository.Find((highscore) => highscore.UserId == userId);
 
             if (highScoreQuery.Count == 0)
             {
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<IEnumerable<HighScoreDTO>>(highScoreQuery));
+            return Ok(_mapper.Map<List<HighScoreDTO>>(highScoreQuery));
         }
 
         [HttpPost("{userId}/highscores")]

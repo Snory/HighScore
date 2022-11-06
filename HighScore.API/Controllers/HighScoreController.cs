@@ -23,23 +23,23 @@ namespace HighScore.API.Controllers
 
 
         [HttpGet(("highscores"))]
-        public async Task<ActionResult<IEnumerable<HighScoreDTO>>> GetHighScores()
+        public async Task<ActionResult<IEnumerable<HighScoreDTO>>> GetHighScores(int pageNumber = 1, int pageSize = 10)
         {
-            var highScoreQuery = (await _highScoreRepository.GetAll()).ToList();
+            var expression = ExpressionBuilder.CreateExpression<HighScoreEntity>((users) => 1 == 1);
+            var collection = await _highScoreRepository.Find(expression);
 
-            if (highScoreQuery.Count == 0)
+            if (collection.Count == 0)
             {
                 return NoContent();
             }
 
-            return Ok(_mapper.Map<IEnumerable<HighScoreDTO>>(highScoreQuery));
+            return Ok(_mapper.Map<List<HighScoreDTO>>(collection));
 
         }
 
         [HttpDelete("highscores/{highScoreId}")]
         public async Task<ActionResult> DeleteHighScore(int highScoreId)
         {
-
             var highScoreToDelete = (await _highScoreRepository.Find((highScore) => highScore.Id == highScoreId)).FirstOrDefault();
 
             if (highScoreToDelete == null)

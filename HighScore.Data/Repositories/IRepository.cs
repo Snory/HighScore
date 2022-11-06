@@ -8,9 +8,7 @@ namespace HighScore.Data.Repositories
 
         public Task Delete(T item);
 
-        public Task<IEnumerable<T>> GetAll();
-
-        public Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate);
+        public Task<List<T>> Find(Expression<Func<T, bool>> predicate, int pageNumber = 1, int pageSize = 20);
 
         public Task SaveChanges();
 

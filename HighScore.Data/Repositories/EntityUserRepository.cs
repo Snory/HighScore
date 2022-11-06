@@ -13,6 +13,7 @@ namespace HighScore.Data.Repositories
     public class EntityUserRepository : IRepository<UserEntity>
     {
         private HighScoreContext _context;
+        private const int _MAXPAGESIZE = 20;
 
         public EntityUserRepository(HighScoreContext context)
         {
@@ -33,15 +34,19 @@ namespace HighScore.Data.Repositories
             await SaveChanges();
         }
 
-        public async Task<IEnumerable<UserEntity>> Find(Expression<Func<UserEntity, bool>> predicate)
+        public async Task<List<UserEntity>> Find(Expression<Func<UserEntity, bool>> predicate, int pageNumber = 1 , int pageSize = 20)
         {
-            return await _context.Users.AsQueryable().Where(predicate).ToListAsync();
-        }
+            if (pageSize > _MAXPAGESIZE)
+            {
+                pageSize = _MAXPAGESIZE;
+            }
 
-
-        public async Task<IEnumerable<UserEntity>> GetAll()
-        {
-            return await _context.Users.ToListAsync();
+            return await 
+                    _context.Users.AsQueryable()
+                    .Where(predicate)
+                    .Skip(pageSize  * (pageNumber - 1))
+                    .Take(pageSize)
+                    .ToListAsync();
         }
 
         public async Task SaveChanges()
