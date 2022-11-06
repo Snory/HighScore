@@ -3,7 +3,6 @@ using AutoMapper;
 using HighScore.Data.Repositories;
 using HighScore.Domain.Entities;
 using HighScore.Domain.Models;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HighScore.API.Controllers

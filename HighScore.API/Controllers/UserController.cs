@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace HighScore.API.Controllers
 {
@@ -65,12 +66,17 @@ namespace HighScore.API.Controllers
                 expression = expression.And((users) => users.Name.Contains(searchQuery));
             }
 
-            var collection = await _userRepository.Find(expression, pageNumber, pageSize);
+            var (collection, paginatonMetaData) = await _userRepository.Find(expression, pageNumber, pageSize);
 
             if(collection == null)
             {
                 return NotFound();
             }
+
+            //ok result should return result set of requested data, not metadata
+            //therefore put metadata to header
+            Response.Headers.Add("X-Pagination",
+                JsonSerializer.Serialize(paginatonMetaData));
 
             return Ok(_mapper.Map<List<UserDTO>>(collection));
         }
