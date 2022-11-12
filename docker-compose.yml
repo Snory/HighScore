@@ -1,0 +1,9 @@
+
+version: '3.4'
+
+services:
+  highscoreapi:
+    image: highscoreapi
+    build:
+      context: .
+      dockerfile: HighScore.API/Dockerfile
