@@ -6,4 +6,22 @@ services:
     image: highscoreapi
     build:
       context: .
-      dockerfile: HighScore.API/Dockerfile
+      dockerfile: Dockerfile
+    ports:
+      - "7208:80"    
+    networks:
+      - highscropeapi-network
+    depends_on:
+      - "sqldata"    
+  sqldata:
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      - SA_PASSWORD=${sqldatapass}
+      - ACCEPT_EULA=Y
+    ports:
+      - "5434:1433"
+    networks:
+      - highscropeapi-network       
+networks:
+  highscropeapi-network:
+    driver: bridge
