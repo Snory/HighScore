@@ -28,6 +28,7 @@ builder.Services.AddDbContext<HighScoreContext>(
 
 builder.Services.AddScoped(typeof(IRepository<UserEntity>), typeof(EntityUserRepository));
 builder.Services.AddScoped(typeof(IRepository<HighScoreEntity>), typeof(EntityHighScoreRepository));
+builder.Services.AddScoped(typeof(IRepository<LeaderBoardEntity>), typeof(LeaderBoardRepository));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();

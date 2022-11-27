@@ -11,16 +11,17 @@ using System.Threading.Tasks;
 
 namespace HighScore.Data.Repositories
 {
-    public class EntityHighScoreRepository : IRepository<HighScoreEntity>
+    public class LeaderBoardRepository : IRepository<LeaderBoardEntity>
     {
         private HighScoreContext _context;
         private const int _MAXPAGESIZE = 20;
-        public EntityHighScoreRepository(HighScoreContext context)
+
+        public LeaderBoardRepository(HighScoreContext context)
         {
             _context = context;
         }
 
-        public async Task<HighScoreEntity> Add(HighScoreEntity item)
+        public async Task<LeaderBoardEntity> Add(LeaderBoardEntity item)
         {
             await _context.AddAsync(item);
             await SaveChanges();
@@ -28,45 +29,48 @@ namespace HighScore.Data.Repositories
             return item;
         }
 
-        public async Task Delete(HighScoreEntity item)
+        public async Task Delete(LeaderBoardEntity item)
         {
             _context.Remove(item);
             await SaveChanges();
-        } 
+        }
 
-        public async Task<(List<HighScoreEntity>, PaginationMetadata)> Find(Expression<Func<HighScoreEntity, bool>> filterPredicate, Expression<Func<HighScoreEntity, dynamic>> orderPredicate, int pageNumber, int pageSize)
+        public async Task<List<LeaderBoardEntity>> Find(Expression<Func<LeaderBoardEntity, bool>> filterPredicate)
+        {
+            var collectionToReturn = await
+                    _context.LeaderBoards.AsQueryable()
+                    .Where(filterPredicate)
+                    .ToListAsync();
+
+
+            return collectionToReturn;
+        }
+
+        public async Task<(List<LeaderBoardEntity>, PaginationMetadata)> Find(Expression<Func<LeaderBoardEntity, bool>> filterPredicate, Expression<Func<LeaderBoardEntity, dynamic>> orderPredicate, int pageNumber = 1, int pageSize = 20)
         {
             if (pageSize > _MAXPAGESIZE)
             {
                 pageSize = _MAXPAGESIZE;
             }
 
-            var totalItemCount = await _context.HighScores.CountAsync();
+
+            var totalItemCount = await _context.LeaderBoards.CountAsync();
             var paginationMetaData = new PaginationMetadata(totalItemCount, pageSize, pageNumber);
 
             var collectionToReturn = await
-                    _context.HighScores.AsQueryable()
-                    .Where(filterPredicate)                    
+                    _context.LeaderBoards.AsQueryable()
+                    .Where(filterPredicate)
                     .OrderByDescending(orderPredicate)
                     .Skip(pageSize * (pageNumber - 1))
                     .Take(pageSize)
                     .ToListAsync();
 
             return (collectionToReturn, paginationMetaData);
-
         }
 
         public async Task SaveChanges()
         {
             await _context.SaveChangesAsync();
-        }
-
-        public async Task<List<HighScoreEntity>> Find(Expression<Func<HighScoreEntity, bool>> filterPredicate)
-        {
-            return await
-                    _context.HighScores.AsQueryable()
-                    .Where(filterPredicate)
-                    .ToListAsync();
         }
     }
 }

@@ -15,6 +15,11 @@ namespace HighScore.Data.Repositories
             return expresion;
         }
 
+        public static Expression<Func<T,dynamic>> CreateExpression<T>(Expression<Func<T, dynamic>> expresion)
+        {
+            return expresion;
+        }
+
         public static Expression<Func<T, bool>> And<T>(this Expression<Func<T, bool>> expression1, Expression<Func<T, bool>> expression2)
         {
             //apply params from expression1 to expression2

@@ -35,7 +35,7 @@ namespace HighScore.Data.Repositories
             await SaveChanges();
         }
 
-        public async Task<(List<UserEntity>, PaginationMetadata)> Find(Expression<Func<UserEntity, bool>> predicate, int pageNumber = 1 , int pageSize = 20)
+        public async Task<(List<UserEntity>, PaginationMetadata)> Find(Expression<Func<UserEntity, bool>> filterPredicate, Expression<Func<UserEntity, dynamic>> orderPredicate, int pageNumber = 1 , int pageSize = 20)
         {
             if (pageSize > _MAXPAGESIZE)
             {
@@ -48,7 +48,8 @@ namespace HighScore.Data.Repositories
 
             var collectionToReturn = await
                     _context.Users.AsQueryable()
-                    .Where(predicate)
+                    .Where(filterPredicate)
+                    .OrderByDescending(orderPredicate)
                     .Skip(pageSize * (pageNumber - 1))
                     .Take(pageSize)
                     .ToListAsync();
@@ -61,11 +62,11 @@ namespace HighScore.Data.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<UserEntity>> Find(Expression<Func<UserEntity, bool>> predicate)
+        public async Task<List<UserEntity>> Find(Expression<Func<UserEntity, bool>> filterPredicate)
         {
             return await
                     _context.Users.AsQueryable()
-                    .Where(predicate)
+                    .Where(filterPredicate)
                     .ToListAsync();
         }
     }

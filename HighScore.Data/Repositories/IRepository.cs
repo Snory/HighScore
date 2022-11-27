@@ -9,9 +9,9 @@ namespace HighScore.Data.Repositories
 
         public Task Delete(T item);
 
-        public Task<List<T>> Find(Expression<Func<T, bool>> predicate);
+        public Task<List<T>> Find(Expression<Func<T, bool>> filterPredicate);
 
-        public Task<(List<T>, PaginationMetadata)> Find(Expression<Func<T, bool>> predicate, int pageNumber = 1, int pageSize = 20);
+        public Task<(List<T>, PaginationMetadata)> Find(Expression<Func<T, bool>> filterPredicate, Expression<Func<T, dynamic>> orderPredicate, int pageNumber = 1, int pageSize = 20);
 
         public Task SaveChanges();
 
