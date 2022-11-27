@@ -8,23 +8,17 @@ using System.Threading.Tasks;
 
 namespace HighScore.Domain.Entities
 {
-    [Table("HighScores")]
-    public class HighScoreEntity
+
+    [Table("LeaderBoards")]
+    public class LeaderBoardEntity 
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required]
-        public float Score { get; set; }
-        [Required]
-        public UserEntity User { get; set; } = null!;
-        public int UserId { get; set; }
+        [MaxLength(100)]
+        public string Name { get; set; } = null!;
 
-        [Required]
-        public LeaderBoardEntity LeaderBoard {get; set;} = null!;
-
-        public int LeaderBoardId { get; set; }
-
-
+        public List<HighScoreEntity> HighScores { get; set; } = new List<HighScoreEntity>();
     }
 }

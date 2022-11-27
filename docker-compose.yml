@@ -9,6 +9,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "7208:80"    
+    environment:
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=fuck1ngPa$$word
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     networks:
       - highscropeapi-network
     depends_on:

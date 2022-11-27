@@ -9,6 +9,7 @@ namespace HighScore.API.Profiles
         public HighScoreProfile()
         {
             CreateMap<HighScoreWriteDataDTO, HighScoreEntity>();
+            CreateMap<HighScoreEntity, HighScoreWriteDataDTO>();
             CreateMap<HighScoreDTO, HighScoreEntity>();
             CreateMap<HighScoreEntity, HighScoreDTO>();
         }

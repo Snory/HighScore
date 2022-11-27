@@ -8,5 +8,7 @@ namespace HighScore.Domain.Models
         public float Score { get; set; }
 
         public int UserId { get; set; }
+
+        public int LeaderBoardId { get; set; }
     }
 }
