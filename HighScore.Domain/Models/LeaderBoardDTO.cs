@@ -8,7 +8,6 @@ namespace HighScore.Domain.Models
 {
     public class LeaderBoardDTO
     {
-        public int Id { get; set; }
         public string Name { get; set; } = null!;
     }
 }
