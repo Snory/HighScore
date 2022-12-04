@@ -46,7 +46,7 @@ namespace HighScore.Data.Repositories
             return collectionToReturn;
         }
 
-        public async Task<(List<LeaderBoardEntity>, PaginationMetadata)> Find(Expression<Func<LeaderBoardEntity, bool>> filterPredicate, Expression<Func<LeaderBoardEntity, dynamic>> orderPredicate, int pageNumber = 1, int pageSize = 20)
+        public async Task<(List<LeaderBoardEntity>, PaginationMetadata)> Find(Expression<Func<LeaderBoardEntity, bool>> filterPredicate, Expression<Func<LeaderBoardEntity, dynamic>> orderPredicate, string sorting, int pageNumber = 1, int pageSize = 20)
         {
             if (pageSize > _MAXPAGESIZE)
             {
@@ -57,11 +57,21 @@ namespace HighScore.Data.Repositories
             var totalItemCount = await _context.LeaderBoards.CountAsync();
             var paginationMetaData = new PaginationMetadata(totalItemCount, pageSize, pageNumber);
 
-            var collectionToReturn = await
+            var query =
                     _context.LeaderBoards.AsQueryable()
-                    .Where(filterPredicate)
-                    .OrderByDescending(orderPredicate)
-                    .Skip(pageSize * (pageNumber - 1))
+                    .Where(filterPredicate);
+
+            if (sorting == "asc")
+            {
+                query = query.OrderBy(orderPredicate);
+            }
+            else
+            {
+                query = query.OrderByDescending(orderPredicate); //if they are not able to get asc/desc right, sort it by desc :D
+            }
+
+            var collectionToReturn = await
+                    query.Skip(pageSize * (pageNumber - 1))
                     .Take(pageSize)
                     .ToListAsync();
 

@@ -42,20 +42,24 @@ namespace HighScore.API.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HighScoreReadDTO>>> GetHighScores(int? leaderBoardId, int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<HighScoreReadDTO>>> GetHighScores(int? leaderBoardId, string? sorting, int pageNumber = 1, int pageSize = 10)
         {
 
             var filterPredicate = ExpressionBuilder.CreateExpression<HighScoreEntity>((highScores) => 1 == 1);
-
             var orderPredicate = ExpressionBuilder.CreateExpression<HighScoreEntity>((highScores) => highScores.Score);
-                
-            if(leaderBoardId != null)
+
+            if (string.IsNullOrEmpty(sorting))
+            {
+                sorting = "asc";
+            }
+
+            if (leaderBoardId != null)
             {
                 filterPredicate = filterPredicate.And(ExpressionBuilder.CreateExpression<HighScoreEntity>((highScores) => highScores.LeaderBoardId == leaderBoardId));
             }
 
 
-            var (collection, paginatonMetaData) = await _highScoreRepository.Find(filterPredicate, orderPredicate, pageNumber, pageSize);
+            var (collection, paginatonMetaData) = await _highScoreRepository.Find(filterPredicate, orderPredicate, sorting, pageNumber, pageSize);
 
             if(collection.Count == 0)
             {

@@ -2,8 +2,8 @@
 using HighScore.Data.Repositories;
 using HighScore.Domain.Entities;
 using HighScore.Domain.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace HighScore.API.Controllers
 {
@@ -22,15 +22,24 @@ namespace HighScore.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<LeaderBoardReadDTO>>> GetLeaderBoards(int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<LeaderBoardReadDTO>>> GetLeaderBoards(string? sorting, int pageNumber = 1, int pageSize = 10)
         {
             var expression = ExpressionBuilder.CreateExpression<LeaderBoardEntity>((leaderBoard) => 1 == 1);
-            var collection = await _leaderBoardRepository.Find(expression);
+            var orderPredicate = ExpressionBuilder.CreateExpression<LeaderBoardEntity>((leaderBoard) => leaderBoard.Id);
+            if (string.IsNullOrEmpty(sorting))
+            {
+                sorting = "asc";
+            }
+
+            var (collection, paginatonMetaData) = await _leaderBoardRepository.Find(expression, orderPredicate, sorting ,pageNumber, pageSize);
 
             if (collection.Count == 0)
             {
                 return NoContent();
             }
+
+            Response.Headers.Add("X-Pagination",
+                JsonSerializer.Serialize(paginatonMetaData));
 
             return Ok(_mapper.Map<List<LeaderBoardReadDTO>>(collection));
 

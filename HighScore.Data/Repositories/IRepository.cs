@@ -11,7 +11,7 @@ namespace HighScore.Data.Repositories
 
         public Task<List<T>> Find(Expression<Func<T, bool>> filterPredicate);
 
-        public Task<(List<T>, PaginationMetadata)> Find(Expression<Func<T, bool>> filterPredicate, Expression<Func<T, dynamic>> orderPredicate, int pageNumber = 1, int pageSize = 20);
+        public Task<(List<T>, PaginationMetadata)> Find(Expression<Func<T, bool>> filterPredicate, Expression<Func<T, dynamic>> orderPredicate, string sorting, int pageNumber = 1, int pageSize = 20);
 
         public Task SaveChanges();
 

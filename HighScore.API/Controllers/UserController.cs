@@ -34,8 +34,7 @@ namespace HighScore.API.Controllers
 
             if (userQuery != null)
             {
-
-                return BadRequest("User with that name already exists");
+              return BadRequest("User with that name already exists");
             }
 
             UserEntity userAdded = await _userRepository.Add(_mapper.Map<UserEntity>(userData));
@@ -47,11 +46,15 @@ namespace HighScore.API.Controllers
   
         //default routing attribute based on router attribute defined for class
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserReadDTO>>> GetUsers(string? name, string? searchQuery, int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<UserReadDTO>>> GetUsers(string? name, string? searchQuery, string? sorting, int pageNumber = 1, int pageSize = 10)
         {
    
             var expression = ExpressionBuilder.CreateExpression<UserEntity>((users) => 1==1);
             var orderPredicate = ExpressionBuilder.CreateExpression<UserEntity>((users) => users.Id);
+            if (string.IsNullOrEmpty(sorting))
+            {
+                sorting = "asc";
+            }
 
             if (!string.IsNullOrEmpty(name))
             {
@@ -63,7 +66,7 @@ namespace HighScore.API.Controllers
                 expression = expression.And((users) => users.Name.Contains(searchQuery));
             }
 
-            var (collection, paginatonMetaData) = await _userRepository.Find(expression, orderPredicate, pageNumber, pageSize);
+            var (collection, paginatonMetaData) = await _userRepository.Find(expression, orderPredicate, sorting, pageNumber, pageSize);
 
             if(collection.Count == 0)
             {
@@ -103,7 +106,7 @@ namespace HighScore.API.Controllers
                 return NotFound();
             }
 
-            _mapper.Map(userData,userToUpdate); //this mapping will cause change to the object and therefore updated,lol, but do i like it?
+            _mapper.Map(userData,userToUpdate); //this mapping will cause change to the object and therefore update,lol, but do i like it?
             await _highScoreRepository.SaveChanges();
 
             return NoContent();
