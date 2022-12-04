@@ -22,7 +22,7 @@ namespace HighScore.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<LeaderBoardDTO>>> GetLeaderBoards(int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<LeaderBoardReadDTO>>> GetLeaderBoards(int pageNumber = 1, int pageSize = 10)
         {
             var expression = ExpressionBuilder.CreateExpression<LeaderBoardEntity>((leaderBoard) => 1 == 1);
             var collection = await _leaderBoardRepository.Find(expression);
@@ -32,7 +32,7 @@ namespace HighScore.API.Controllers
                 return NoContent();
             }
 
-            return Ok(_mapper.Map<List<LeaderBoardDTO>>(collection));
+            return Ok(_mapper.Map<List<LeaderBoardReadDTO>>(collection));
 
         }
 

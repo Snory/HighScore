@@ -42,12 +42,12 @@ namespace HighScore.API.Controllers
 
             var routeValues = new { userId = userAdded.Id };
 
-            return CreatedAtRoute("GetUser", routeValues, _mapper.Map<UserDTO>(userAdded));
+            return CreatedAtRoute("GetUser", routeValues, _mapper.Map<UserReadDTO>(userAdded));
         }
   
         //default routing attribute based on router attribute defined for class
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers(string? name, string? searchQuery, int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<UserReadDTO>>> GetUsers(string? name, string? searchQuery, int pageNumber = 1, int pageSize = 10)
         {
    
             var expression = ExpressionBuilder.CreateExpression<UserEntity>((users) => 1==1);
@@ -75,11 +75,11 @@ namespace HighScore.API.Controllers
             Response.Headers.Add("X-Pagination",
                 JsonSerializer.Serialize(paginatonMetaData));
 
-            return Ok(_mapper.Map<List<UserDTO>>(collection));
+            return Ok(_mapper.Map<List<UserReadDTO>>(collection));
         }
 
         [HttpGet("{userId}",Name = "GetUser")]
-        public async Task<ActionResult<UserDTO>> GetUser(int userId)
+        public async Task<ActionResult<UserReadDTO>> GetUser(int userId)
         {
 
             var userQuery = (await _userRepository.Find((user) => user.Id == userId)).First();
@@ -89,7 +89,7 @@ namespace HighScore.API.Controllers
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<UserDTO>(userQuery));
+            return Ok(_mapper.Map<UserReadDTO>(userQuery));
         }
 
 

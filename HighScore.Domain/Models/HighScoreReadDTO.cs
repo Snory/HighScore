@@ -1,6 +1,6 @@
 ﻿namespace HighScore.Domain.Models
 {
-    public class HighScoreDTO
+    public class HighScoreReadDTO
     {
         public int Id { get; set; }
         public int UserId { get; set; }

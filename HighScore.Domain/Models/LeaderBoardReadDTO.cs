@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HighScore.Domain.Models
 {
-    public class LeaderBoardDTO
+    public class LeaderBoardReadDTO
     {
         public string Id { get; set; } = null!;
         public string Name { get; set; } = null!;

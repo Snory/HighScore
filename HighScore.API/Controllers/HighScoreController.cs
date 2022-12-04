@@ -24,7 +24,7 @@ namespace HighScore.API.Controllers
         }
 
         [HttpGet("highScoreId", Name = "GetHighScore")]
-        public async Task<ActionResult<IEnumerable<HighScoreDTO>>> GetHighScore(int highScoreId)
+        public async Task<ActionResult<IEnumerable<HighScoreReadDTO>>> GetHighScore(int highScoreId)
         {
 
             var filterPredicate = ExpressionBuilder.CreateExpression<HighScoreEntity>((highScores) => highScores.Id == highScoreId);
@@ -36,13 +36,13 @@ namespace HighScore.API.Controllers
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<HighScoreDTO>(collection));
+            return Ok(_mapper.Map<HighScoreReadDTO>(collection));
 
         }
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HighScoreDTO>>> GetHighScores(int? leaderBoardId, int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<HighScoreReadDTO>>> GetHighScores(int? leaderBoardId, int pageNumber = 1, int pageSize = 10)
         {
 
             var filterPredicate = ExpressionBuilder.CreateExpression<HighScoreEntity>((highScores) => 1 == 1);
@@ -65,7 +65,7 @@ namespace HighScore.API.Controllers
             Response.Headers.Add("X-Pagination",
                  JsonSerializer.Serialize(paginatonMetaData));
 
-            return Ok(_mapper.Map<List<HighScoreDTO>>(collection));
+            return Ok(_mapper.Map<List<HighScoreReadDTO>>(collection));
 
         }
 
@@ -100,7 +100,7 @@ namespace HighScore.API.Controllers
             //protože jsem jednu metodu v těle měl s throwem kvuli chybejici implementaci
             //a i tak to routu zvládlo vytvořit a vrátit
 
-            return CreatedAtRoute("GetHighScore", routeValues, _mapper.Map<HighScoreDTO>(highScoreAdded));
+            return CreatedAtRoute("GetHighScore", routeValues, _mapper.Map<HighScoreReadDTO>(highScoreAdded));
 
         }
 

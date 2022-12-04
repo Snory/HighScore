@@ -9,7 +9,7 @@ namespace HighScore.API.Profiles
         public LeaderBoardProfile()
         {
             CreateMap<LeaderBoardWriteDTO, LeaderBoardEntity>();
-            CreateMap<LeaderBoardEntity, LeaderBoardDTO>();
+            CreateMap<LeaderBoardEntity, LeaderBoardReadDTO>();
         }
     }
 }
