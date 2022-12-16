@@ -8,7 +8,7 @@ namespace HighScore.API.Profiles
     {
         public UserProfile()
         {
-            CreateMap<UserWriteData, UserEntity>();
+            CreateMap<UserWriteDTO, UserEntity>();
             CreateMap<UserEntity, UserReadDTO>();
         }
     }

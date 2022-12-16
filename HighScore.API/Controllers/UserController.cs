@@ -2,6 +2,7 @@
 using HighScore.Data.Repositories;
 using HighScore.Domain.Entities;
 using HighScore.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
@@ -12,6 +13,7 @@ using System.Text.Json;
 namespace HighScore.API.Controllers
 {
     [Route("api/users")]
+    [Authorize]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -28,9 +30,9 @@ namespace HighScore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostUser(UserWriteData userData)
+        public async Task<ActionResult> PostUser(UserWriteDTO userData)
         {
-            var userQuery = (await _userRepository.Find((user) => user.Name == userData.Name)).First();
+            var userQuery = (await _userRepository.Find((user) => user.Username == userData.Username)).FirstOrDefault();
 
             if (userQuery != null)
             {
@@ -58,12 +60,12 @@ namespace HighScore.API.Controllers
 
             if (!string.IsNullOrEmpty(name))
             {
-                expression = expression.And((users) => users.Name == name);
+                expression = expression.And((users) => users.Username == name);
             }
 
             if (!string.IsNullOrWhiteSpace(searchQuery))
             {
-                expression = expression.And((users) => users.Name.Contains(searchQuery));
+                expression = expression.And((users) => users.Username.Contains(searchQuery));
             }
 
             var (collection, paginatonMetaData) = await _userRepository.Find(expression, orderPredicate, sorting, pageNumber, pageSize);
@@ -97,7 +99,7 @@ namespace HighScore.API.Controllers
 
 
         [HttpPut("{userId}")]
-        public async Task<ActionResult> UpdateUser(int userId, UserWriteData userData)
+        public async Task<ActionResult> UpdateUser(int userId, UserWriteDTO userData)
         {
             var userToUpdate = (await _userRepository.Find((user) => user.Id == userId)).FirstOrDefault();
 

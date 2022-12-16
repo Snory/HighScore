@@ -16,7 +16,7 @@ namespace HighScore.Domain.Entities
         public int Id { get; set; }
         [Required]
         [MaxLength(100)]
-        public string Name { get; set; } = null!;
+        public string Username { get; set; } = null!;
 
         public List<HighScoreEntity> HighScores { get; set; } = new List<HighScoreEntity>();
     }

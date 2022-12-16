@@ -19,4 +19,8 @@
     <ProjectReference Include="..\HighScore.Domain\HighScore.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

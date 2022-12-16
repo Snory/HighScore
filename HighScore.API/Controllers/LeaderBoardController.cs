@@ -2,6 +2,7 @@
 using HighScore.Data.Repositories;
 using HighScore.Domain.Entities;
 using HighScore.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
@@ -9,6 +10,7 @@ namespace HighScore.API.Controllers
 {
     [Route("api/leaderboards")]
     [ApiController]
+    [Authorize]
     public class LeaderBoardController : ControllerBase
     {
 
@@ -46,7 +48,7 @@ namespace HighScore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostHighScore(LeaderBoardWriteDTO leaderBoardData)
+        public async Task<ActionResult> PostLeaderBoard(LeaderBoardWriteDTO leaderBoardData)
         {
 
             LeaderBoardEntity leaderBoardAdded =

@@ -4,6 +4,7 @@ using HighScore.Data.Metadata;
 using HighScore.Data.Repositories;
 using HighScore.Domain.Entities;
 using HighScore.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -12,6 +13,7 @@ namespace HighScore.API.Controllers
 {
     [Route("api/highscores")]
     [ApiController]
+    [Authorize]
     public class HighScoreController : ControllerBase
     {
         private IRepository<HighScoreEntity> _highScoreRepository;
