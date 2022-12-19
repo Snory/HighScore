@@ -10,8 +10,9 @@ using System.Text;
 
 namespace HighScore.API.Controllers
 {
-    [Route("api/authentication")]
+    [Route("api/v{version:apiVersion}/authentication")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class AuthenticationController : ControllerBase
     {
 

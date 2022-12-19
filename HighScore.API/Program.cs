@@ -48,6 +48,14 @@ builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>
     };
 });
 
+builder.Services.AddApiVersioning(actionSetup =>
+{
+    actionSetup.AssumeDefaultVersionWhenUnspecified = true;
+    actionSetup.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+    actionSetup.ReportApiVersions = true;
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline (aka middleware)

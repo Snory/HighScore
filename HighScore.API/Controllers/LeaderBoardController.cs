@@ -8,9 +8,10 @@ using System.Text.Json;
 
 namespace HighScore.API.Controllers
 {
-    [Route("api/leaderboards")]
+    [Route("api/v{version:apiVersion}/leaderboards")]
     [ApiController]
     [Authorize]
+    [ApiVersion("1.0")]
     public class LeaderBoardController : ControllerBase
     {
 

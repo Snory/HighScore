@@ -12,9 +12,10 @@ using System.Text.Json;
 
 namespace HighScore.API.Controllers
 {
-    [Route("api/users")]
+    [Route("api/v{version:apiVersion}/users")]
     [Authorize]
     [ApiController]
+    [ApiVersion("1.0")]
     public class UserController : ControllerBase
     {
         private IRepository<UserEntity> _userRepository;
